@@ -16,23 +16,38 @@ public static class MyDefine         // 定义
 
 
 
-
-    public static string GetDataSaveDirPath()
+    public static string Data_Path
     {
-        string fliePath ="";
+        get { return DataPath + "/Data/"; }
+    }
+
+
+    public static string TuJi_Path
+    {
+        get { return DataPath + "/图集/"; }
+    }
+
+
+    private static readonly string DataPath;
+
+
+    static MyDefine()
+    {
+
         if (Application.platform == RuntimePlatform.WindowsEditor)
         {
-            fliePath = MyAssetUtil.GetApplicationDataPathNoAssets() + "/Data/";
+            DataPath = Application.persistentDataPath;
 
         }
         else if (Application.platform == RuntimePlatform.WindowsPlayer)
         {
             string dataPath = Application.dataPath;
+            dataPath = dataPath.Replace("\\", "/");
             int lastIndex = dataPath.LastIndexOf('/');
-            fliePath = dataPath.Substring(0, lastIndex) + "/Data/";
+            DataPath = dataPath.Substring(0, lastIndex);
         }
-        return fliePath;
     }
+
 
 
 

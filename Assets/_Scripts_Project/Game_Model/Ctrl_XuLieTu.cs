@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using PSPUtil.ShuJuJieGuo;
 using PSPUtil.Singleton;
 using PSPUtil.StaticUtil;
 using UnityEngine;
@@ -9,10 +10,24 @@ public class Ctrl_XuLieTu : Singleton_Mono<Ctrl_XuLieTu>
 {
 
 
+
+    public void InitDealutData()              // 没任何保存 初始化最初值
+    {
+        for (ushort i = 0; i < 8; i++)
+        {
+            Dictionary<ushort, Dictionary<string, string[]>> bottomK_pathsV = new Dictionary<ushort, Dictionary<string, string[]>>();
+            for (ushort j = 0; j < 5; j++)
+            {
+                bottomK_pathsV.Add(j, new Dictionary<string, string[]>());
+            }
+            indexK_KNameV.Add(i, bottomK_pathsV);
+        }
+        IsInitFinish = true;
+    }
+
+
     public void InitData()
     {
-
-
         // 先初始化 indexK_KNameV
         for (ushort i = 0; i < 8; i++)
         {
@@ -38,7 +53,27 @@ public class Ctrl_XuLieTu : Singleton_Mono<Ctrl_XuLieTu>
 
     public List<string[]> GetPaths(ushort bigIndex,ushort bottomIndex)                // 获取
     {
-        return new List<string[]>(indexK_KNameV[bigIndex][bottomIndex].Values);
+
+        List<string[]> lsit = new List<string[]>();
+
+
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        {
+            foreach (string[] strs in indexK_KNameV[bigIndex][bottomIndex].Values)
+            {
+                string[] tmps = new string[strs.Length];
+                for (int i = 0; i < strs.Length; i++)
+                {
+                    tmps[i] = MyDefine.TuJi_Path + strs[i];
+                }
+                lsit.Add(tmps);
+            }
+        }
+        else if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            lsit.AddRange(indexK_KNameV[bigIndex][bottomIndex].Values);
+        }
+        return lsit;
     }
 
 
@@ -54,14 +89,32 @@ public class Ctrl_XuLieTu : Singleton_Mono<Ctrl_XuLieTu>
             return false;
         }
 
-        indexK_KNameV[bigIndex][bottomIndex].Add(kName,paths);
 
+
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        {
+            // 如 C:\Users\Administrator\Desktop\我的工具\工具_技能\图集\霸王拳\出招\图1.png
+            // KName -> 图1
+            // 保存  -> 霸王拳\出招\图1.png 的集合
+            string[] savePaths = new string[paths.Length];
+            for (int i = 0; i < paths.Length; i++)
+            {
+                string tmp = paths[i].Replace("\\", "/");
+                savePaths[i] = tmp.Replace(MyDefine.TuJi_Path, "");
+
+            }
+            indexK_KNameV[bigIndex][bottomIndex].Add(kName, savePaths);
+        }
+        else if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            indexK_KNameV[bigIndex][bottomIndex].Add(kName, paths);
+        }
         return true;
 
     }
 
 
-    public bool DeleteOne(ushort bigIndex, ushort bottomIndex, string kName)         // 删除单个 
+    public bool DeleteOne(ushort bigIndex, ushort bottomIndex, string kName)         // 删除单个
     {
         if (indexK_KNameV[bigIndex][bottomIndex].ContainsKey(kName))
         {
@@ -183,8 +236,7 @@ public class Ctrl_XuLieTu : Singleton_Mono<Ctrl_XuLieTu>
 
     private Dictionary<string, string[]> Load(ushort bigIndex,ushort bottomIndex)
     {
-
-        string fliePath = MyDefine.GetDataSaveDirPath() + FIleNames[bigIndex];
+        string fliePath = MyDefine.Data_Path + FIleNames[bigIndex];
         string keyName = BottomKeyName[bottomIndex];
         return ES3.Load(keyName, fliePath, new Dictionary<string, string[]>()); ;
     }
@@ -192,10 +244,11 @@ public class Ctrl_XuLieTu : Singleton_Mono<Ctrl_XuLieTu>
 
     private void Save(ushort bigIndex, ushort bottomIndex)
     {
-        string fliePath = MyDefine.GetDataSaveDirPath() + FIleNames[bigIndex];
+        string fliePath = MyDefine.Data_Path + FIleNames[bigIndex];
         string keyName = BottomKeyName[bottomIndex];
-
         ES3.Save<Dictionary<string, string[]>>(keyName, indexK_KNameV[bigIndex][bottomIndex], fliePath);
-
     }
+
+
+
 }

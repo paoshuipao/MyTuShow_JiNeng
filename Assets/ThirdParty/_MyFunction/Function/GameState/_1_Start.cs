@@ -8,7 +8,7 @@ public class _1_Start : ISceneBean
 
     protected override void OnEnter()                    // 进入了
     {
-        MyEventCenter.SendEvent(E_GameEvent.ShowLog);      // 显示 Log
+//        MyEventCenter.SendEvent(E_GameEvent.ShowLog);      // 显示 Log
     }
     protected override void OnStart()
     {

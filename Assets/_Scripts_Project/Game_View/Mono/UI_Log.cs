@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using DG.Tweening;
-using PSPUtil.StaticUtil;
+using PSPUtil.Extensions;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UI_Log : BaseUI_Mono,IPointerClickHandler
+public class UI_Log : MonoBehaviour, IPointerClickHandler
 {
-
-
-    protected override void OnStart()
+    void Awake()
     {
+
+        transform.SetParent(UIRoot.Instance.FirstUiTransform);
+
         Application.logMessageReceived += HandleLog;
 
 
@@ -41,34 +41,21 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
         tx_Stack = Get<Text>("Log/StackShow/Contant/BtnText");
         go_StackContrl = GetGameObject("Log/StackShow/RightContrl");
         AddButtOnClick("Log/StackShow/RightContrl/BtnCopy", Btn_OnCopy);
-        AddButtOnClick("Log/StackShow/RightContrl/BtnEasy",Btn_OnEasy);
-
-    }
-
-    protected override void OnShow()
-    {
-        Btn_OnClear();
-
-    }
-
-    protected override void OnHideAnim()
-    {
-
-
+        AddButtOnClick("Log/StackShow/RightContrl/BtnEasy", Btn_OnEasy);
     }
 
 
     #region 私有
 
     private Toggle toggle_IsOn;
-    private GameObject go_Log,moBan_Log,moBan_Warning,moBan_Error;
+    private GameObject go_Log, moBan_Log, moBan_Warning, moBan_Error;
     private RectTransform t_Group;
-    private Text tx_LogNum,tx_WarningNum,tx_ErrorNum,tx_Stack;
+    private Text tx_LogNum, tx_WarningNum, tx_ErrorNum, tx_Stack;
     private Button btn_CurrentBtnClose;
     private EItemTtype mCurrentItem;
     private GameObject go_StackContrl;
 
-    private int logNum,warningNum,errorNum;
+    private int logNum, warningNum, errorNum;
 
 
     private const string ZERO = "0";
@@ -77,7 +64,7 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
     public class EItemTtype
     {
         public LogType Type;
-        public int Num;     // 总共有几个
+        public int Num; // 总共有几个
         public GameObject GoItem;
         public Text Tx_Num;
         public Text Tx_Str;
@@ -92,28 +79,6 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
     }
 
 
-
-
-    protected override void OnAddListener()
-    {
-    }
-
-    protected override void OnRemoveListener()
-    {
-    }
-
-    protected override E_GameEvent GetShowEvent()
-    {
-        return E_GameEvent.ShowLog;
-    }
-
-    protected override E_GameEvent GetHideEvent()
-    {
-        return E_GameEvent.HideLog;
-    }
-
-
-
     private void ClosePreClickItem()
     {
         if (null != btn_CurrentBtnClose)
@@ -122,14 +87,12 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
             btn_CurrentBtnClose.gameObject.SetActive(false);
             go_StackContrl.SetActive(false);
             tx_Stack.text = "";
-
         }
     }
 
 
-    private void GengXinNum(LogType type, int num)      // 更新右上角的数字
+    private void GengXinNum(LogType type, int num) // 更新右上角的数字
     {
-
         switch (type)
         {
             case LogType.Error:
@@ -147,16 +110,15 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
             default:
                 throw new Exception("未实现");
         }
-
     }
 
     #endregion
 
 
-    protected override void OnUpdate()
+    void Update()
     {
-        base.OnUpdate();
-        if ((Input.GetKeyDown(KeyCode.LeftControl) && Input.GetKey(KeyCode.Y)) || (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Y)))
+        if ((Input.GetKeyDown(KeyCode.LeftControl) && Input.GetKey(KeyCode.Y)) ||
+            (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Y)))
         {
             Btn_OnClear();
         }
@@ -166,18 +128,17 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
         {
             toggle_IsOn.isOn = !toggle_IsOn.isOn;
         }
-
     }
 
 
-    private void HandleLog(string logString, string stackTrace, LogType type)        // 核心接收到 Log 事件
+    private void HandleLog(string logString, string stackTrace, LogType type) // 核心接收到 Log 事件
     {
         if (type == LogType.Exception || type == LogType.Assert)
         {
             return;
         }
 
-        GengXinNum(type,1);
+        GengXinNum(type, 1);
 
         if (logK_ItemTypeV.ContainsKey(logString))
         {
@@ -188,7 +149,7 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
         else
         {
             EItemTtype item = new EItemTtype();
-            GameObject go ;
+            GameObject go;
             switch (type)
             {
                 case LogType.Error:
@@ -217,16 +178,14 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
                 mCurrentItem = item;
                 Btn_OnItemClick(btnClose);
             });
-            logK_ItemTypeV.Add(logString,item);
+            logK_ItemTypeV.Add(logString, item);
             LayoutRebuilder.ForceRebuildLayoutImmediate(t_Group);
-
         }
-
     }
 
-    private void Btn_OnItemClick(Button btnClose)                     // 点击每一个 Item
+    private void Btn_OnItemClick(Button btnClose) // 点击每一个 Item
     {
-        ClosePreClickItem();    // 关闭之前点击 Item 的操作
+        ClosePreClickItem(); // 关闭之前点击 Item 的操作
         btn_CurrentBtnClose = btnClose;
         btn_CurrentBtnClose.onClick.AddListener(Btn_OnItemClose);
         tx_Stack.text = mCurrentItem.StackStr;
@@ -235,7 +194,7 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
     }
 
 
-    private void Btn_OnItemClose()                                   // 单独删除一个
+    private void Btn_OnItemClose() // 单独删除一个
     {
         int num = mCurrentItem.Num;
         GengXinNum(mCurrentItem.Type, -num);
@@ -243,27 +202,24 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
         logK_ItemTypeV.Remove(mCurrentItem.LogStr);
         btn_CurrentBtnClose = null;
         Destroy(mCurrentItem.GoItem);
-
     }
 
-    public void OnPointerClick(PointerEventData eventData)           // 任何点击事件都会触发这里
+    public void OnPointerClick(PointerEventData eventData) // 任何点击事件都会触发这里
     {
-        ClosePreClickItem();    // 关闭之前点击 Item 的操作
+        ClosePreClickItem(); // 关闭之前点击 Item 的操作
     }
 
 
     //————————————————————————————————————
 
 
-
-
-    private void Toggle_IsOn(bool isOn)                  // 是否显示整个 Log
+    private void Toggle_IsOn(bool isOn) // 是否显示整个 Log
     {
         go_Log.SetActive(isOn);
     }
 
 
-    private void Btn_OnClear()                           // 清除
+    private void Btn_OnClear() // 清除
     {
         logNum = 0;
         warningNum = 0;
@@ -278,12 +234,12 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
             Destroy(item.GoItem);
         }
 
-        logK_ItemTypeV.Clear(); 
-
+        logK_ItemTypeV.Clear();
     }
 
     private readonly string RexgexStr = @"/\S*cs:[0-9]+";
-    private void Btn_OnEasy()                          // 点击简化
+
+    private void Btn_OnEasy() // 点击简化
     {
         string str = tx_Stack.text;
         Regex regex = new Regex(RexgexStr);
@@ -294,19 +250,135 @@ public class UI_Log : BaseUI_Mono,IPointerClickHandler
             sb.AppendLine(match.Value);
         }
         tx_Stack.text = sb.ToString();
-
-
     }
 
 
-
-    private void Btn_OnCopy()                          // 点击复制
+    private void Btn_OnCopy() // 点击复制
     {
         GUIUtility.systemCopyBuffer = tx_Stack.text;
     }
 
 
+    //————————————————————————————————————
 
 
+    protected Transform GetTransform(string path)
+    {
+        Transform t = transform.Find(path);
+        if (null == t)
+        {
+            throw new Exception("查找 Transform 失败 —— " + path);
+        }
+        return t;
+    }
 
+    protected GameObject GetGameObject(string path)
+    {
+        return GetTransform(path).gameObject;
+    }
+
+
+    protected T Get<T>()
+        where T : Component
+
+    {
+        return transform.GetComponentNo2Log<T>();
+    }
+
+    protected T Get<T>(string path)
+        where T : Component
+    {
+        return GetTransform(path).GetComponentNo2Log<T>();
+    }
+
+
+    protected GameObject InstantiateMoBan(GameObject go, Transform parent)
+    {
+        GameObject tmpGo = Instantiate(go, parent);
+        tmpGo.transform.localScale = Vector3.one;
+        tmpGo.transform.localPosition = Vector3.zero;
+        tmpGo.SetActive(true);
+        return tmpGo;
+    }
+
+
+    //按组件添加----------------------------------------------------------------------------------
+
+
+    protected void AddButtOnClick(string path, UnityAction action)
+    {
+        if (null != action)
+        {
+            Button btn = GetTransform(path).GetComponentNo2Log<Button>();
+            btn.onClick.AddListener(action);
+        }
+    }
+
+    protected void AddButtOnClick(Button btn, UnityAction action)
+    {
+        if (null != action)
+        {
+            btn.onClick.AddListener(action);
+        }
+    }
+
+
+    protected void AddSliderOnValueChanged(string path, UnityAction<float> action)
+    {
+        if (null != action)
+        {
+            Slider slider = GetTransform(path).GetComponentNo2Log<Slider>();
+            slider.onValueChanged.AddListener(action);
+        }
+    }
+
+
+    protected void AddSliderOnValueChanged(Slider slider, UnityAction<float> action)
+    {
+        slider.onValueChanged.AddListener(action);
+    }
+
+    protected void AddToggleOnValueChanged(Toggle toggle, UnityAction<bool> action)
+    {
+        if (null != action)
+        {
+            toggle.onValueChanged.AddListener(action);
+        }
+    }
+
+
+    protected void AddToggleOnValueChanged(string path, UnityAction<bool> action)
+    {
+        if (null != action)
+        {
+            Toggle toggle = GetTransform(path).GetComponentNo2Log<Toggle>();
+            toggle.onValueChanged.AddListener(action);
+        }
+    }
+
+    protected void AddInputOnValueChanged(string path, UnityAction<string> action)
+    {
+        if (null != action)
+        {
+            InputField input = GetTransform(path).GetComponentNo2Log<InputField>();
+            input.onValueChanged.AddListener(action);
+        }
+    }
+
+    protected void AddInputOnValueChanged(InputField input, UnityAction<string> action)
+    {
+        if (null != action)
+        {
+            input.onValueChanged.AddListener(action);
+        }
+    }
+
+    protected void AddInputOnEndEdit(string path, UnityAction<string> action)
+    {
+        if (null != action)
+        {
+            InputField input = GetTransform(path).GetComponentNo2Log<InputField>();
+            input.onEndEdit.AddListener(action);
+        }
+    }
 }

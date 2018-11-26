@@ -11,44 +11,44 @@ public class Ctrl_ContantInfo : Singleton_Mono<Ctrl_ContantInfo>
     public void InitData()
     {
 
+        fliePath = MyDefine.Data_Path + SaveFileName;
 
-        fliePath = MyDefine.GetDataSaveDirPath() + SaveFileName;
 
-        // 左边 Item 名称
-        if (IsExists(PP_LEFT_NAME))
+        if (IsExistsSave())
         {
             LeftItemNames = Load<string[]>(PP_LEFT_NAME);
-        }
-        else
-        {
-            LeftItemNames = new string[8];
-            for (ushort i = 0; i < 8; i++)
-            {
-                SetLeftItemName(i, MyDefine.LeftName[i]);
-            }
-        }
-
-
-        // 底下名称
-        if (IsExists(PP_BOTTOM_NAMES))
-        {
             BottomName = Load<string[][]>(PP_BOTTOM_NAMES);
         }
         else
         {
-            BottomName = new string[8][];
-            for (int i = 0; i < 8; i++)
-            {
-                string[] tmpEach = new string[5];
-                for (int j = 0; j < 5; j++)
-                {
-                    tmpEach[j] = MyDefine.LeftName[i] + (j + 1);
-                }
-                BottomName[i] = tmpEach;
-            }
+            InitDealutData();
         }
 
     }
+
+
+    public void InitDealutData()            // 没任何保存 初始化最初值
+    {
+        LeftItemNames = new string[8];
+        for (ushort i = 0; i < 8; i++)
+        {
+            SetLeftItemName(i, MyDefine.LeftName[i]);
+        }
+
+
+        BottomName = new string[8][];
+        for (int i = 0; i < 8; i++)
+        {
+            string[] tmpEach = new string[5];
+            for (int j = 0; j < 5; j++)
+            {
+                tmpEach[j] = MyDefine.LeftName[i] + (j + 1);
+            }
+            BottomName[i] = tmpEach;
+        }
+    }
+
+
 
 
     public void SetLeftItemName(ushort bigIndex,string leftName)
@@ -87,13 +87,11 @@ public class Ctrl_ContantInfo : Singleton_Mono<Ctrl_ContantInfo>
     #region 私有
 
 
-
     private const string PP_LEFT_NAME = "PP_LEFT_NAME";
     private const string PP_BOTTOM_NAMES = "PP_BOTTOM_NAMES";
     private const string SaveFileName = "NormalData.res";        // 保存数据的文件名
 
-
-    private string fliePath; 
+    private string fliePath;    // 保存的文件  C:\Users\Administrator\Desktop\我的工具\工具_技能\Data\NormalData.res
 
     #endregion
 
@@ -112,9 +110,9 @@ public class Ctrl_ContantInfo : Singleton_Mono<Ctrl_ContantInfo>
 
 
 
-    private bool IsExists(string key)
+    private bool IsExistsSave()
     {
-        return ES3.FileExists(fliePath) && ES3.KeyExists(key, fliePath);
+        return ES3.FileExists(fliePath) && ES3.KeyExists(PP_LEFT_NAME, fliePath) && ES3.KeyExists(PP_BOTTOM_NAMES, fliePath);
     }
 
 

@@ -9,8 +9,8 @@ public enum E_GameEvent                           // 这里写事件
     HideStartGameUI,             //隐藏
 
 
-    ShowLog,                    // 显示 Log UI
-    HideLog,                    // 隐藏
+//    ShowLog,                    // 显示 Log UI
+//    HideLog,                    // 隐藏
 
 
 
@@ -54,6 +54,9 @@ public enum E_GameEvent                           // 这里写事件
     GaiBottomName,                // 底下的名称修改了（ushort 大的索引，ushort 小 底下的索引，string 修改后的名称）
 
     //————————————————————————————————————
+
+
+    NoExistsTuJi,                  // 不存在图集文件夹(string 原图集名称)
 
 
     OpenFileContrl,                // 打开 文件 资源管理器

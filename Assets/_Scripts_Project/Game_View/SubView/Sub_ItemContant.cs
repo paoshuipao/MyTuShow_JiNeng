@@ -309,7 +309,7 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
 
     private void Btn_DaoRu()                           // 点击导入
     {
-        MyOpenFileOrFolder.OpenFile(Ctrl_DaoRuInfo.Instance.DaoRuFirstPath, "选择多个文件（序列图）", EFileFilter.TuAndAll,
+        MyOpenFileOrFolder.OpenFile(Ctrl_DaoRuInfo.Instance.ShowFirstPath, "选择多个文件（序列图）", EFileFilter.TuAndAll,
             (filePaths) =>
             {
                 List<FileInfo> fileInfos = new List<FileInfo>(filePaths.Length);
