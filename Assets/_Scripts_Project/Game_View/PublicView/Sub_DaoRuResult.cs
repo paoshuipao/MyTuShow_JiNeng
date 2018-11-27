@@ -17,7 +17,7 @@ public class Sub_DaoRuResult : SubUI
     {
 
         MyEventCenter.AddListener<EDuoTuInfoType, ushort,ushort,List<FileInfo>>(E_GameEvent.RealyDaoRu_File, E_DaoRuTuFromFile);
-        MyEventCenter.AddListener<EDuoTuInfoType, ushort,ushort,List<ResultBean>>(E_GameEvent.RealyDaoRu_Result, E_DaoRuFromTuResult);
+        MyEventCenter.AddListener<EDuoTuInfoType, ushort,ushort,List<ResultBean>,ushort>(E_GameEvent.RealyDaoRu_Result, E_DaoRuFromTuResult);
 
 
         go_Ok = GetGameObject("Contant/Ok");
@@ -154,7 +154,7 @@ public class Sub_DaoRuResult : SubUI
 
 
    
-    private void E_DaoRuFromTuResult(EDuoTuInfoType type, ushort bigIndex, ushort bottomIndex, List<ResultBean> resultBeans) // 通过 ResultBean 导入
+    private void E_DaoRuFromTuResult(EDuoTuInfoType type, ushort bigIndex, ushort bottomIndex, List<ResultBean> resultBeans,ushort colorIndex) // 通过 ResultBean 导入
     {
         mCurrentBigIndex = bigIndex;
         mCurrentBottomIndex = bottomIndex;
@@ -162,7 +162,7 @@ public class Sub_DaoRuResult : SubUI
         ShowThis(isSaveOk, type);
         if (isSaveOk)
         {
-            MyEventCenter.SendEvent(E_GameEvent.DaoRu_FromResult, bigIndex, bottomIndex, resultBeans);
+            MyEventCenter.SendEvent(E_GameEvent.DaoRu_FromResult, bigIndex, bottomIndex, resultBeans, colorIndex);
             switch (type)
             {
                 case EDuoTuInfoType.DaoRu:

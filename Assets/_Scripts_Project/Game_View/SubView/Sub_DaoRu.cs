@@ -169,6 +169,10 @@ public class Sub_DaoRu : SubUI
 
         #endregion
 
+        go_NoNextFolderTip = GetGameObject("Right/NoFolderTip");
+        anim_NoNextFolderTip = go_NoNextFolderTip.GetComponent<DOTweenAnimation>();
+        tx_NoNextFoldetTip = go_NoNextFolderTip.GetComponent<Text>();
+
         #region 导入 && 改名
         // 导入
         tx_TipZhang = Get<Text>("Right/BtnDaoRu/Tip/Num");
@@ -417,6 +421,15 @@ public class Sub_DaoRu : SubUI
 
     #endregion
 
+
+    #region 没有下个文件夹提示
+
+    private DOTweenAnimation anim_NoNextFolderTip;
+    private GameObject go_NoNextFolderTip;
+    private Text tx_NoNextFoldetTip;
+
+    #endregion
+
     #region 私有
 
 
@@ -601,7 +614,8 @@ public class Sub_DaoRu : SubUI
             {
                 resultBeans[i] = allGoK_ResultBeanV[sortList[i]];
             }
-            MyEventCenter.SendEvent(E_GameEvent.ShowDuoTuInfo, resultBeans, EDuoTuInfoType.DaoRu);
+            ushort colorIndex = 0;
+            MyEventCenter.SendEvent(E_GameEvent.ShowDuoTuInfo, resultBeans, EDuoTuInfoType.DaoRu, colorIndex);
 
         }
         else if (chooseGOK_BgV.Count == 1)       // 选择了 1 张
@@ -1585,7 +1599,10 @@ public class Sub_DaoRu : SubUI
         string prePath = mFileBrowser.GetPreFolderPath();
         if (string.IsNullOrEmpty(prePath))
         {
-            MyLog.Red("没有下个文件夹了");
+            go_NoNextFolderTip.SetActive(true);
+            tx_NoNextFoldetTip.color = Color.white;
+            tx_NoNextFoldetTip.text = "没有上一个文件夹了";
+            anim_NoNextFolderTip.DORestart();
         }
         else
         {
@@ -1599,7 +1616,10 @@ public class Sub_DaoRu : SubUI
         string nextPath = mFileBrowser.GetNextFolderPath();
         if (string.IsNullOrEmpty(nextPath))
         {
-            MyLog.Red("没有下个文件夹了");
+            go_NoNextFolderTip.SetActive(true);
+            tx_NoNextFoldetTip.color = Color.white;
+            tx_NoNextFoldetTip.text = "没有下一个文件夹了";
+            anim_NoNextFolderTip.DORestart();
         }
         else
         {

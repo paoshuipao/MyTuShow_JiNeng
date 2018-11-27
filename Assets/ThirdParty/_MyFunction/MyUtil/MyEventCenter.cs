@@ -9,6 +9,7 @@ namespace PSPUtil
     public delegate void Callback<T, U>(T arg1, U arg2);
     public delegate void Callback<T, U, V>(T arg1, U arg2, V arg3);
     public delegate void Callback<T, U, V, X>(T arg1, U arg2, V arg3, X arg4);
+    public delegate void Callback<T, U, V, X,K>(T arg1, U arg2, V arg3, X arg4,K arg5);
 
     public static class MyEventCenter
     {
@@ -41,6 +42,11 @@ namespace PSPUtil
         {
             OnListenerAdding(eventType, handler);
             eventK_ActionV[eventType] = (Callback<T, U, V, X>)eventK_ActionV[eventType] + handler;
+        }
+        public static void AddListener<T, U, V, X,K>(E_GameEvent eventType, Callback<T, U, V, X,K> handler)
+        {
+            OnListenerAdding(eventType, handler);
+            eventK_ActionV[eventType] = (Callback<T, U, V, X,K>)eventK_ActionV[eventType] + handler;
         }
 
         //————————————————————————————————————
@@ -83,7 +89,13 @@ namespace PSPUtil
             OnListenerRemoved(eventType);
         }
 
-
+        public static void RemoveListener<T, U, V, X,K>(E_GameEvent eventType, Callback<T, U, V, X,K> handler)
+        {
+            OnListenerRemoving(eventType, handler);
+            // ReSharper disable once DelegateSubtraction
+            eventK_ActionV[eventType] = (Callback<T, U, V, X,K>)eventK_ActionV[eventType] - handler;
+            OnListenerRemoved(eventType);
+        }
 
         //————————————————————————————————————
 
@@ -177,6 +189,26 @@ namespace PSPUtil
                 }
             }
         }
+
+
+        public static void SendEvent<T, U, V, X,K>(E_GameEvent eventType, T arg1, U arg2, V arg3, X arg4,K arg5)
+        {
+            Delegate d;
+            if (eventK_ActionV.TryGetValue(eventType, out d))
+            {
+                Callback<T, U, V, X,K> callback = d as Callback<T, U, V, X,K>;
+
+                if (callback != null)
+                {
+                    callback(arg1, arg2, arg3, arg4,arg5);
+                }
+                else
+                {
+                    throw new Exception(string.Format("发送消息:{0}，接收者参数与发送者的参数不同 ", eventType));
+                }
+            }
+        }
+
 
         public static void SendEvent(CommonEventBean commonBean)
         {

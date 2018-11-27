@@ -21,17 +21,20 @@ public enum E_GameEvent                           // 这里写事件
 
 
     RealyDaoRu_File,             // 准备要导入（不知道是否成功,需要返回个结果的）(EDuoTuInfoType 样式，ushort 大的索引，ushort 小 底下的索引,List<FileInfo> 文件集合)
-    RealyDaoRu_Result,           // 准备要导入（不知道是否成功,需要返回个结果的）(EDuoTuInfoType 样式，ushort 大的索引，ushort 小 底下的索引,List<ResultBean> 结果集合)
+    RealyDaoRu_Result,           // 准备要导入（不知道是否成功,需要返回个结果的）(EDuoTuInfoType 样式，ushort 大的索引，ushort 小 底下的索引,List<ResultBean> 结果集合,ushort 颜色索引)
 
 
     DaoRu_FromFile,              // 直接导入 通过文件(ushort 大的索引，ushort 小 底下的索引，List<FileInfo> 文件集合)
-    DaoRu_FromResult,            // 直接导入 通过结果(ushort 大的索引，ushort 小 底下的索引，List<ResultBean> 结果集合)
+    DaoRu_FromResult,            // 直接导入 通过结果(ushort 大的索引，ushort 小 底下的索引，List<ResultBean> 结果集合,ushort 颜色索引)
 
 
 
-    ShowDuoTuInfo,           // 显示多图信息(ResultBean[] 文件集合，EDuoTuInfoType 展示类型)
+    ShowDuoTuInfo,           // 显示多图信息(ResultBean[] 文件集合，EDuoTuInfoType 展示类型,ushort 颜色索引)
     CloseDuoTuInfo,          // 关闭(EDuoTuInfoType 类型)
     OnClickNoSaveThisDuoTu,  // 点击了 不保存这个多图（EDuoTuInfoType 类型,string[] 删除路径）
+    OnChangeKuangColor,      // 修改框框的颜色（ushort）
+
+
 
 
     ShowSingleTuInfo,      // 显示单图信息（ResultBean 文件）

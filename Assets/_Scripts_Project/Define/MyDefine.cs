@@ -16,6 +16,17 @@ public static class MyDefine         // 定义
 
 
 
+    private static readonly string[] ColorKuangStrs =
+    {
+        "#FFFFFFFF","#B6F1FDFF","#38ABFDFF","#002CFFFF","#3466C9FF","#09FF00FF","#08A336FF","#F0FF62FF",
+        "#9D9F00FF","#FF8400FF","#A25AECFF","#FF00CEFF","#FF001AFF","#960763FF","#525252FF","#000000FF",
+    };
+
+
+    public static Color[] ColorKuange { get; private set; }
+
+
+
     public static string Data_Path
     {
         get { return DataPath + "/Data/"; }
@@ -46,6 +57,12 @@ public static class MyDefine         // 定义
             int lastIndex = dataPath.LastIndexOf('/');
             DataPath = dataPath.Substring(0, lastIndex);
         }
+        ColorKuange = new Color[ColorKuangStrs.Length];
+        for (int i = 0; i < ColorKuangStrs.Length; i++)
+        {
+            ColorKuange[i] = MyColor.GetColor(ColorKuangStrs[i]);
+        }
+
     }
 
 

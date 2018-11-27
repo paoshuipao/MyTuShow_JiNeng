@@ -189,7 +189,8 @@ public class Sub_Search : SubUI
                 if (isSelect)
                 {
                     isSelect = false;
-                    MyEventCenter.SendEvent(E_GameEvent.ShowDuoTuInfo, resultBeanse, EDuoTuInfoType.SearchShow);
+                    ushort colorIndex = 0;
+                    MyEventCenter.SendEvent(E_GameEvent.ShowDuoTuInfo, resultBeanse, EDuoTuInfoType.SearchShow, colorIndex);
                 }
                 else
                 {

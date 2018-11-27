@@ -13,12 +13,12 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
     protected override void OnStart(Transform root)
     {
         MyEventCenter.AddListener<ushort,ushort,List<FileInfo>>(E_GameEvent.DaoRu_FromFile, E_OnDaoRuFromFile);
-        MyEventCenter.AddListener<ushort,ushort,List<ResultBean>>(E_GameEvent.DaoRu_FromResult, E_OnDaoRuFromResult);
+        MyEventCenter.AddListener<ushort,ushort,List<ResultBean>,ushort>(E_GameEvent.DaoRu_FromResult, E_OnDaoRuFromResult);
         MyEventCenter.AddListener<EDuoTuInfoType>(E_GameEvent.CloseDuoTuInfo, E_CloseDuoTuInfo);                       // 关闭多图信息
         MyEventCenter.AddListener<EDuoTuInfoType,string[]>(E_GameEvent.OnClickNoSaveThisDuoTu, E_DeleteOne);           // 多图信息中删除一个
         MyEventCenter.AddListener(E_GameEvent.OnClickSureDeleteAll, E_SureDeleteAl);                                   // 删除所有
         MyEventCenter.AddListener<List<ResultBean>>(E_GameEvent.DaoRuSucees2Delete, E_DaoRuSucees2Delete);             // 转换成功
-
+        MyEventCenter.AddListener<ushort>(E_GameEvent.OnChangeKuangColor, E_OnChangeKuangColor);
 
         // 模版
         go_MoBan = GetGameObject("MoBan");
@@ -73,9 +73,9 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         input_GaiMIng = Get<InputField>("GaiMing/Contant/Grid/Top/InputField");
         AddInputOnValueChanged(input_GaiMIng, (str) =>
         {
-            if (colorIndex>=0)
+            if (mGaiMingcolorIndex >= 0)
             {
-                inputEditName = "<color=" + MyDefine.ColorChoose[colorIndex] + ">" + str + " </color>";
+                inputEditName = "<color=" + MyDefine.ColorChoose[mGaiMingcolorIndex] + ">" + str + " </color>";
             }
             else
             {
@@ -177,7 +177,7 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
     private bool isSelect;               // 是否之前点击了
 
 
-    private ushort mCurrentBigIndex,mCurrentBottomIndex;    // 当前处于那个大的Item索引，和小的索引
+    private ushort mCurrentBigIndex,mCurrentBottomIndex,mCurrentItemIndex;    // 当前处于那个大的Item索引，和小的索引
     private readonly GameObject[] l_ItemGOs = new GameObject[8];                        // 8个总对象
     private readonly RectTransform[][] l_TopContant = new RectTransform[8][]; // 8个下的分别5个RectTransform
     private readonly Text[][] l_BottomNames = new Text[8][];                  // 8个下的分别5个底下名称
@@ -279,13 +279,13 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
     private void Btn_CloseGaiMing()                            // 关闭改名
     {
         go_GaiNing.SetActive(false);
-        colorIndex = -1;
+        mGaiMingcolorIndex = -1;
         input_GaiMIng.text = "";
     }
 
 
 
-    private int colorIndex = -1;
+    private int mGaiMingcolorIndex = -1;
     private string inputEditName;
     private void ManyBtn_OnAddColorClick(ushort index)        // 点击了增加颜色的按钮
     {
@@ -293,11 +293,11 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         if (index == 8)
         {
             inputEditName = input_GaiMIng.text;
-            colorIndex = -1;
+            mGaiMingcolorIndex = -1;
         }
         else
         {
-            colorIndex = index;
+            mGaiMingcolorIndex = index;
             inputEditName = "<color="+MyDefine.ColorChoose[index]+">" + input_GaiMIng.text + " </color>";
         }
         tx_GaiMing.text = inputEditName;
@@ -394,21 +394,26 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
     private void E_OnDaoRuFromFile(ushort bigIndex, ushort bottomIndex, List<FileInfo> fileInfos)      // 通过 FileInfo 导入
     {
         // 1. 创建一个实例
-        Transform t = InstantiateMoBan(go_MoBan, l_TopContant[bigIndex][bottomIndex]);
+        RectTransform rt = l_TopContant[bigIndex][bottomIndex];
+        Transform t = InstantiateMoBan(go_MoBan, rt);
+        ushort index = (ushort)(rt.childCount - 1);
 
         // 2. 加载图片
         MyLoadTu.LoadMultipleTu(fileInfos, (resBean) =>
         {
             // 3. 完成后把图集加上去
-            InitMoBan(t, resBean);
+            ushort color = Ctrl_XuLieTu.Instance.GetColor(bigIndex, bottomIndex, index);
+            InitMoBan(bigIndex,bottomIndex, index, color, t, resBean);
         });
     }
 
 
-    private void E_OnDaoRuFromResult(ushort bigIndex,ushort bottomIndex,List<ResultBean> resultBeans)  // 通过 ResultBean 导入
+    private void E_OnDaoRuFromResult(ushort bigIndex,ushort bottomIndex,List<ResultBean> resultBeans,ushort colorIndex)  // 通过 ResultBean 导入
     {
-        Transform t = InstantiateMoBan(go_MoBan, l_TopContant[bigIndex][bottomIndex]);
-        InitMoBan(t, resultBeans.ToArray());
+
+        RectTransform rt = l_TopContant[bigIndex][bottomIndex];
+        Transform t = InstantiateMoBan(go_MoBan, rt);
+        InitMoBan(bigIndex, bottomIndex, (ushort)(rt.childCount - 1), colorIndex, t, resultBeans.ToArray());
     }
 
     private float SetSize(float value)
@@ -425,12 +430,18 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         return res;
     }
 
-    private void InitMoBan(Transform t,ResultBean[] resultBeans)         // 初始化模版
+
+
+    private void InitMoBan(ushort bigIndex,ushort bottomIndex,ushort index,ushort colorIndex, Transform t,ResultBean[] resultBeans)         // 初始化模版
     {
         GameObject go = t.gameObject;
         Ctrl_XuLieTu.Instance.CeateMobanInitThis(resultBeans);
+        Ctrl_XuLieTu.Instance.SetColor(bigIndex,bottomIndex,index,colorIndex);
+
 
         t.Find("AnimTu/Anim").GetComponent<UGUI_SpriteAnim>().ChangeAnim(resultBeans.ToSprites());
+        t.Find("AnimTu/Kuang").GetComponent<Image>().color = MyDefine.ColorKuange[colorIndex];
+
 
         float width = resultBeans[0].Width;
         float height = resultBeans[0].Height;
@@ -462,9 +473,10 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         {
             if (go.Equals(go_CurrentSelect) && isSelect) // 双击
             {
-
+                mCurrentItemIndex = index;
                 mUIGameObject.SetActive(false);       // 显示信息时把整个给隐藏了
-                MyEventCenter.SendEvent(E_GameEvent.ShowDuoTuInfo, resultBeans, EDuoTuInfoType.InfoShow);
+                ushort color = Ctrl_XuLieTu.Instance.GetColor(bigIndex, bottomIndex, index);
+                MyEventCenter.SendEvent(E_GameEvent.ShowDuoTuInfo, resultBeans, EDuoTuInfoType.InfoShow, color);
             }
             else // 单击
             {
@@ -540,6 +552,13 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         }
     }
 
+
+
+    private void E_OnChangeKuangColor(ushort colorIndex)            // 修改了框框颜色
+    {
+        Ctrl_XuLieTu.Instance.SetColor(mCurrentBigIndex, mCurrentBottomIndex, mCurrentItemIndex, colorIndex);
+        go_CurrentSelect.transform.Find("AnimTu/Kuang").GetComponent<Image>().color = MyDefine.ColorKuange[colorIndex];
+    }
 
 
 }

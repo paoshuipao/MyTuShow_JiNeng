@@ -117,23 +117,28 @@ public class UGUI_BtnToggleGroup : MonoBehaviour
     }
 
 
+    [MyHead("是否一开始设置一下")]
+    public bool isFirstSet = true;
+
 
     void Start()
     {
-
-        foreach (UGUI_BtnToggleItem item in SubToggles)
+        if (isFirstSet)
         {
-            if (!item.IsOn)
+            foreach (UGUI_BtnToggleItem item in SubToggles)
             {
-                if (null != E_OnCloseOtherItem)
+                if (!item.IsOn)
                 {
-                    E_OnCloseOtherItem(item.ItemIndex);
+                    if (null != E_OnCloseOtherItem)
+                    {
+                        E_OnCloseOtherItem(item.ItemIndex);
+                    }
                 }
             }
-        }
-        if (null!= E_OnChooseItem)
-        {
-            E_OnChooseItem((ushort)mCurrentIndex);
+            if (null != E_OnChooseItem)
+            {
+                E_OnChooseItem((ushort)mCurrentIndex);
+            }
         }
 
     }

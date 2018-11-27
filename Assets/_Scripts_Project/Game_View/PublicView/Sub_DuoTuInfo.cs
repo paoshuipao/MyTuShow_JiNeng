@@ -23,7 +23,7 @@ public class Sub_DuoTuInfo : SubUI
 
     protected override void OnStart(Transform root)
     {
-        MyEventCenter.AddListener<ResultBean[], EDuoTuInfoType>(E_GameEvent.ShowDuoTuInfo, E_Show);  // 显示
+        MyEventCenter.AddListener<ResultBean[], EDuoTuInfoType, ushort>(E_GameEvent.ShowDuoTuInfo, E_Show);  // 显示
         MyEventCenter.AddListener(E_GameEvent.ItemChange, E_OnChangeLeftItem);                       // 左边改动
         MyEventCenter.AddListener<ushort,ushort,string>(E_GameEvent.GaiBottomName, E_GaiBottomName); // 修改了底下的名称
 
@@ -34,14 +34,15 @@ public class Sub_DuoTuInfo : SubUI
         // 大图显示
         rtAnimTu = Get<RectTransform>("Contant/Left/D2_Tu/Tu/AnimTu");
         anim_Tu = Get<UGUI_SpriteAnim>("Contant/Left/D2_Tu/Tu/AnimTu/Anim");
- 
-
-
+        sp_ColorKuang = Get<Image>("Contant/Left/D2_Tu/Tu/AnimTu/ColorKuang");
+        mColorToggleGroup = Get<UGUI_BtnToggleGroup>("Contant/Left/D2_Tu/Bottom/Contant");
+        mColorToggleGroup.E_OnChooseItem += ManyBtn_ChnageColor;
+        go_BtnColorChange = GetGameObject("Contant/Left/D2_Tu/Bottom/BtnChange");
+        AddButtOnClick("Contant/Left/D2_Tu/Bottom/BtnChange", Btn_ChangeColor);
 
         // 条目
         moBan_Item = GetGameObject("Contant/Left/D2_Item/MoBan");
         rt_GridContant = Get<RectTransform>("Contant/Left/D2_Item/Contant");
-
 
 
 
@@ -115,6 +116,9 @@ public class Sub_DuoTuInfo : SubUI
     // 左边的大图
     private RectTransform rtAnimTu;
     private UGUI_SpriteAnim anim_Tu;
+    private Image sp_ColorKuang;
+    private UGUI_BtnToggleGroup mColorToggleGroup;
+    private GameObject go_BtnColorChange;
 
 
     // 左边的条目
@@ -174,6 +178,7 @@ public class Sub_DuoTuInfo : SubUI
             tx_ChangeText.text = "还原到大图";
         }
     }
+
 
 
 
@@ -251,7 +256,7 @@ public class Sub_DuoTuInfo : SubUI
     private void ManyBtn_DaoRu(ushort bigIndex,ushort bottomIndex)      // 点击 多项的导入
     {
 
-        MyEventCenter.SendEvent(E_GameEvent.RealyDaoRu_Result, mCurrentType, bigIndex, bottomIndex, l_CurrentBeans);
+        MyEventCenter.SendEvent(E_GameEvent.RealyDaoRu_Result, mCurrentType, bigIndex, bottomIndex, l_CurrentBeans, mCurrentColorIndex);
         Btn_OnCloseShowInfo();
     }
 
@@ -380,14 +385,36 @@ public class Sub_DuoTuInfo : SubUI
 
     #endregion
 
+    private ushort mCurrentColorIndex;
+
+    private void ManyBtn_ChnageColor(ushort index)                  // 切换颜色
+    {
+        mCurrentColorIndex = index;
+        sp_ColorKuang.color = MyDefine.ColorKuange[index];
+        if (mCurrentType == EDuoTuInfoType.InfoShow && !go_BtnColorChange.activeSelf)
+        {
+            go_BtnColorChange.SetActive(true);
+        }
+    }
+
+
+    private void Btn_ChangeColor()                   // 确定改变颜色
+    {
+        MyEventCenter.SendEvent(E_GameEvent.OnChangeKuangColor, mCurrentColorIndex);
+        Btn_OnCloseShowInfo();
+    }
 
 
     //—————————————————— 事件 ——————————————————
 
 
 
-    private void E_Show(ResultBean[] resultBeans, EDuoTuInfoType type)      // 显示
+    private void E_Show(ResultBean[] resultBeans, EDuoTuInfoType type,ushort colorIndex)      // 显示
     {
+        mCurrentColorIndex = colorIndex;
+        sp_ColorKuang.color = MyDefine.ColorKuange[colorIndex];
+        mColorToggleGroup.ChangeItem(colorIndex);
+        go_BtnColorChange.SetActive(false);
         l_CurrentBeans = new List<ResultBean>(resultBeans);
         mCurrentType = type;
         go_UseJianBanTip.SetActive(false);
@@ -446,10 +473,13 @@ public class Sub_DuoTuInfo : SubUI
 
         tx_Size.text = width + "x" + height;
         anim_Tu.ChangeAnim(resultBeans.ToSprites());
-        rtAnimTu.sizeDelta = new Vector2(width, height);
+
+
+        rtAnimTu.sizeDelta = new Vector2(Mathf.Min(width,512), Mathf.Min(height, 512));
 
 
     }
+
 
 
 
