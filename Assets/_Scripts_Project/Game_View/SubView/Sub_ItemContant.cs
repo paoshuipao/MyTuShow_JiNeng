@@ -432,9 +432,25 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
 
         t.Find("AnimTu/Anim").GetComponent<UGUI_SpriteAnim>().ChangeAnim(resultBeans.ToSprites());
 
-        ResultBean bean = resultBeans[0];
-        t.Find("AnimTu").GetComponent<RectTransform>().sizeDelta = new Vector2(SetSize(bean.Width),SetSize(bean.Height));
-        string kName = Path.GetFileNameWithoutExtension(bean.File.Name);
+        float width = resultBeans[0].Width;
+        float height = resultBeans[0].Height;
+        if (width <= 20)
+        {
+            for (int i = 1; i < resultBeans.Length; i++)
+            {
+                if (resultBeans[i].Width > 20)
+                {
+                    width = resultBeans[i].Width;
+                    height = resultBeans[i].Height;
+                    break;
+                }
+            }
+        }
+        t.Find("AnimTu").GetComponent<RectTransform>().sizeDelta = new Vector2(SetSize(width),SetSize(height));
+
+
+
+        string kName = Path.GetFileNameWithoutExtension(resultBeans[0].File.Name);
         int lastIndex = kName.LastIndexOf('_');        // 最后的 _01 不要
         if (lastIndex>0)
         {

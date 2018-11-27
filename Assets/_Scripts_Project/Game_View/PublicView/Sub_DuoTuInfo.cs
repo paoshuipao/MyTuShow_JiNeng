@@ -30,44 +30,12 @@ public class Sub_DuoTuInfo : SubUI
 
         AddButtOnClick("BtnClose", Btn_OnCloseShowInfo);
 
-        #region 大图显示
 
+        // 大图显示
         rtAnimTu = Get<RectTransform>("Contant/Left/D2_Tu/Tu/AnimTu");
         anim_Tu = Get<UGUI_SpriteAnim>("Contant/Left/D2_Tu/Tu/AnimTu/Anim");
  
-        tx_WidthSize = Get<Text>("Contant/Left/D2_Tu/Bottom/SliderWidth/TxValue");
-        slider_Width = Get<Slider>("Contant/Left/D2_Tu/Bottom/SliderWidth/Slider");
-        tx_HeightSize = Get<Text>("Contant/Left/D2_Tu/Bottom/SliderHeight/TxValue");
-        slider_Height = Get<Slider>("Contant/Left/D2_Tu/Bottom/SliderHeight/Slider");
-        slider_Width.maxValue = Max_TuSize;
-        slider_Height.maxValue = Max_TuSize;
 
-        AddSliderOnValueChanged(slider_Width, (value) =>
-        {
-            SetTuSize(value);
-        });
-        AddSliderOnValueChanged(slider_Height, (value) =>
-        {
-            SetTuSize(0, value);
-        });
-        AddButtOnClick("Contant/Left/D2_Tu/Bottom/BtnSize/BtnPlusHalf", () =>
-        {
-            SetTuSize(yuanLaiWidth * 0.5f, yuanLaiHidth * 0.5f);
-        });
-        AddButtOnClick("Contant/Left/D2_Tu/Bottom/BtnSize/BtnFirst", () =>
-        {
-            SetTuSize(yuanLaiWidth, yuanLaiHidth);
-        });
-        AddButtOnClick("Contant/Left/D2_Tu/Bottom/BtnSize/BtnAddHalf", () =>
-        {
-            SetTuSize(yuanLaiWidth * 1.5f, yuanLaiHidth * 1.5f);
-        });
-        AddButtOnClick("Contant/Left/D2_Tu/Bottom/BtnSize/BtnAddTwo", () =>
-        {
-            SetTuSize(yuanLaiWidth * 2f, yuanLaiHidth * 2f);
-        });
-
-        #endregion
 
 
         // 条目
@@ -81,7 +49,6 @@ public class Sub_DuoTuInfo : SubUI
         tx_Name = Get<Text>("Contant/Right/Top/TxInfo/Name/Name");
         tx_Num = Get<Text>("Contant/Right/Top/TxInfo/Num/Num");
         tx_Size = Get<Text>("Contant/Right/Top/TxInfo/Size/Num");
-        go_NoEqualTip = GetGameObject("Contant/Right/Top/TxInfo/NoEqualTip");
 
         // 切换
         go_D2Tu = GetGameObject("Contant/Left/D2_Tu");
@@ -142,17 +109,13 @@ public class Sub_DuoTuInfo : SubUI
     #region 私有
 
 
-    private const ushort Max_TuSize = 400;   // 限制图片最大的大小
     private EDuoTuInfoType mCurrentType;
     private List<ResultBean> l_CurrentBeans;
 
     // 左边的大图
     private RectTransform rtAnimTu;
     private UGUI_SpriteAnim anim_Tu;
-    private Slider slider_Width, slider_Height;
-    private Text tx_WidthSize, tx_HeightSize;
-    private Vector2 TuSize = new Vector2(512, 512);
-    private float yuanLaiWidth, yuanLaiHidth;
+
 
     // 左边的条目
     private bool isFirstShowItem = true;
@@ -172,7 +135,7 @@ public class Sub_DuoTuInfo : SubUI
     private GameObject go_Delete, go_BtnJianBan;
     private GameObject go_AllDaoRu;
     private Text tx_Name,tx_Num,tx_Size;
-    private GameObject go_NoEqualTip,go_UseJianBanTip;
+    private GameObject go_UseJianBanTip;
 
 
     private readonly Text[] l_TittleNames = new Text[8];      // 8 个 标题
@@ -210,40 +173,6 @@ public class Sub_DuoTuInfo : SubUI
             go_D2Item.SetActive(true);
             tx_ChangeText.text = "还原到大图";
         }
-    }
-
-
-    private void SetTuSize(float width = 0, float height = 0)         // 设置图大小
-    {
-        if (width > 0)
-        {
-            if (width < 8)
-            {
-                width = 8;
-            }
-            if (width > Max_TuSize)
-            {
-                width = Max_TuSize;
-            }
-            TuSize.x = width;
-            slider_Width.value = width;
-            tx_WidthSize.text = width.ToString();
-        }
-        if (height > 0)
-        {
-            if (height < 8)
-            {
-                height = 8;
-            }
-            if (height > Max_TuSize)
-            {
-                height = Max_TuSize;
-            }
-            TuSize.y = height;
-            slider_Height.value = height;
-            tx_HeightSize.text = height.ToString();
-        }
-        rtAnimTu.sizeDelta = TuSize;
     }
 
 
@@ -499,27 +428,26 @@ public class Sub_DuoTuInfo : SubUI
         // 设置右边信息
         tx_Name.text = Path.GetFileNameWithoutExtension(resultBeans[0].File.FullName);
         tx_Num.text = resultBeans.Length.ToString();
-        tx_Size.text = resultBeans[0].Width + "x" + resultBeans[0].Height;
 
-
-        yuanLaiWidth = resultBeans[0].Width;
-        yuanLaiHidth = resultBeans[0].Height;
-        anim_Tu.ChangeAnim(resultBeans.ToSprites());
-        SetTuSize(yuanLaiWidth, yuanLaiHidth);
-
-
-        // 是否尺寸全部相同 
-        bool isAllSameSize = true;
-
-        for (int i = 0; i < resultBeans.Length; i++)
+        float width = resultBeans[0].Width;
+        float height = resultBeans[0].Height;
+        if (width<=20)
         {
-            if (yuanLaiWidth != resultBeans[i].Width || yuanLaiHidth != resultBeans[i].Height)
+            for (int i = 1; i < resultBeans.Length; i++)
             {
-                isAllSameSize = false;
-                break;
+                if (resultBeans[i].Width>20)
+                {
+                    width = resultBeans[i].Width;
+                    height = resultBeans[i].Height;
+                    break;
+                }
             }
         }
-        go_NoEqualTip.SetActive(!isAllSameSize);
+
+        tx_Size.text = width + "x" + height;
+        anim_Tu.ChangeAnim(resultBeans.ToSprites());
+        rtAnimTu.sizeDelta = new Vector2(width, height);
+
 
     }
 

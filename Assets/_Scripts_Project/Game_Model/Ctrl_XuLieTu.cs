@@ -1,9 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using PSPUtil.ShuJuJieGuo;
 using PSPUtil.Singleton;
 using PSPUtil.StaticUtil;
 using UnityEngine;
+
+
+[SerializeField]
+public class SaveTuBean
+{
+    public string KName;
+    public string[] ProPaths;
+    public ushort ColorIndex;
+}
+
 
 
 public class Ctrl_XuLieTu : Singleton_Mono<Ctrl_XuLieTu>
