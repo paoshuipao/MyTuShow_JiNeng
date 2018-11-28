@@ -19,16 +19,7 @@ public class UI_Game : BaseUI
 
         for (int i = 0; i < 8; i++)
         {
-
             L_LeftText[i] = Get<Text>("Left/Item"+(i+1)+"/TxLeft");
-
-
-        }
-
-        for (int i = 0; i < 11; i++)
-        {
-            L_LeftButton[i] = Get<Button>("Left/Item" + (i + 1));
-            L_LeftButton[i].interactable = false;
         }
 
         go_Loading = GetGameObject("LoadingAnim");
@@ -36,7 +27,6 @@ public class UI_Game : BaseUI
         // 等待选择文件或文件UI
         go_WaitBrowser = GetGameObject("OpenBrowser");
         tx_Wait = Get<Text>("OpenBrowser/Text");
-
 
 
         // 一开始把之前所有的都加载进来
@@ -70,9 +60,27 @@ public class UI_Game : BaseUI
 
 
 
+    private bool isLoading = false;
+
+    private void E_LoadTuFinishFromFile()
+    {
+        isLoading = false;
+    }
+
     IEnumerator StartFirst()
     {
         go_Loading.SetActive(true);
+        MyEventCenter.AddListener(E_GameEvent.LoadTuFinishFromFile, E_LoadTuFinishFromFile);
+
+        Button btn_DaoRu = Get<Button>("Left/Item9");
+        Button btn_Search = Get<Button>("Left/Item10");
+        Button btn_QuYuSearch = Get<Button>("Left/Item11");
+
+        btn_DaoRu.interactable = false;
+        btn_Search.interactable = false;
+        btn_QuYuSearch.interactable = false;
+
+
         while (!Ctrl_XuLieTu.Instance.IsInitFinish)
         {
             yield return 0;
@@ -86,6 +94,10 @@ public class UI_Game : BaseUI
                 List<string[]> psthList = Ctrl_XuLieTu.Instance.GetPaths(bigIndex, bottomIndex);
                 for (int k = 0; k < psthList.Count; k++)
                 {
+                    while (isLoading)       // 有一个在加载中
+                    {
+                        yield return 0;
+                    }
                     string[] tmpPaths = psthList[k];
                     List<FileInfo> fileInfos = new List<FileInfo>(tmpPaths.Length);
                     bool isChuZai = true; // 这些路径是否存在
@@ -102,22 +114,22 @@ public class UI_Game : BaseUI
                     if (isChuZai) // 存在就导入进来
                     {
                         MyEventCenter.SendEvent(E_GameEvent.DaoRu_FromFile, bigIndex, bottomIndex, fileInfos);
+                        isLoading = true;
+//                        yield return new WaitForSeconds(0.1f);  // 每个序列图读 0.1f 秒
                     }
                     else // 不存在就删除存储的
                     {
                         Ctrl_XuLieTu.Instance.DeleteOne(bigIndex, bottomIndex, Path.GetFileNameWithoutExtension(tmpPaths[0]));
                     }
                 }
-                yield return new WaitForSeconds(0.1f);
             }
-            L_LeftButton[bigIndex].interactable = true;
-            yield return 0;
         }
 
-        for (int i = 0; i < 11; i++)
-        {
-            L_LeftButton[i].interactable = true;
-        }
+        yield return 0;
+        MyEventCenter.RemoveListener(E_GameEvent.LoadTuFinishFromFile, E_LoadTuFinishFromFile);
+        btn_DaoRu.interactable = true;
+        btn_Search.interactable = true;
+        btn_QuYuSearch.interactable = true;
         go_Loading.SetActive(false);
 
     }
@@ -126,9 +138,10 @@ public class UI_Game : BaseUI
     #region 私有
 
     private readonly Text[] L_LeftText = new Text[8];             // 左边的 8 个序列图文字
-    private readonly Button[] L_LeftButton = new Button[11];
     private UGUI_BtnToggleGroup mLeftGroup;
     private GameObject go_Loading;
+
+
 
 
     // 底下的等待UI

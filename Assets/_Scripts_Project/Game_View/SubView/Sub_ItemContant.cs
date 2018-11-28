@@ -436,6 +436,7 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         // 2. 加载图片
         MyLoadTu.LoadMultipleTu(fileInfos, (resBean) =>
         {
+            MyEventCenter.SendEvent(E_GameEvent.LoadTuFinishFromFile);
             // 3. 完成后把图集加上去
             ushort color = Ctrl_XuLieTu.Instance.GetColor(bigIndex, bottomIndex, index);
             InitMoBan(bigIndex,bottomIndex, index, color, t, resBean);

@@ -8,6 +8,9 @@ public enum E_GameEvent                           // 这里写事件
     ShowStartGameUI,             //进入 开始游戏 UI
     HideStartGameUI,             //隐藏
 
+    LoadTuFinishFromFile,           // 加载这序列图完成 
+
+
 
 //    ShowLog,                    // 显示 Log UI
 //    HideLog,                    // 隐藏
