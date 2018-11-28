@@ -169,6 +169,9 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
     {
         mUIGameObject.SetActive(false);
         l_ItemGOs[index].SetActive(false);
+        CloseSliderSpeed();
+
+
     }
 
 
@@ -249,6 +252,8 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         scroll.content = l_TopContant[bigIndex][bottomIndex];
 
         mCurrentBottomIndex = bottomIndex;
+
+        CloseSliderSpeed();
 
     }
 
@@ -379,11 +384,41 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
 
 
 
+    private UGUI_SpriteAnim[] l_Anims;
+
+
     private void Slider_ChangeSpeed(float value)                      // 需要改变速度
     {
+        if (null == l_Anims)
+        {
+            l_Anims = l_TopContant[mCurrentBigIndex][mCurrentBottomIndex].GetComponentsInChildren<UGUI_SpriteAnim>();
+        }
 
+        if (null!= l_Anims && l_Anims.Length >0)
+        {
+            for (int i = 0; i < l_Anims.Length; i++)
+            {
+                l_Anims[i].FPS = 0.5f / value;
+            }
+        }
+       
     }
 
+
+
+    private void CloseSliderSpeed()                                   // 还原这个速度的Slider
+    {
+        if (null != l_Anims)
+        {
+            foreach (UGUI_SpriteAnim anim in l_Anims)
+            {
+                anim.FPS = 0.1f;
+            }
+            l_Anims = null;
+            slider_Speed.value = 5;
+        }
+
+    }
 
 
 
@@ -423,9 +458,9 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         {
             res = 300;
         }
-        if (value<6)
+        if (value<4)
         {
-            res = 6;
+            res = 4;
         }
         return res;
     }
@@ -440,8 +475,10 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
 
 
         t.Find("AnimTu/Anim").GetComponent<UGUI_SpriteAnim>().ChangeAnim(resultBeans.ToSprites());
-        t.Find("AnimTu/Kuang").GetComponent<Image>().color = MyDefine.ColorKuange[colorIndex];
+        Color c = MyDefine.ColorKuange[colorIndex];
 
+        t.Find("AnimTu/Kuang").GetComponent<Image>().color = c;
+        t.Find("TxName").GetComponent<Text>().color = c;
 
         float width = resultBeans[0].Width;
         float height = resultBeans[0].Height;
@@ -557,7 +594,9 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
     private void E_OnChangeKuangColor(ushort colorIndex)            // 修改了框框颜色
     {
         Ctrl_XuLieTu.Instance.SetColor(mCurrentBigIndex, mCurrentBottomIndex, mCurrentItemIndex, colorIndex);
-        go_CurrentSelect.transform.Find("AnimTu/Kuang").GetComponent<Image>().color = MyDefine.ColorKuange[colorIndex];
+        Color color = MyDefine.ColorKuange[colorIndex];
+        go_CurrentSelect.transform.Find("AnimTu/Kuang").GetComponent<Image>().color = color;
+        go_CurrentSelect.transform.Find("TxName").GetComponent<Text>().color = color;
     }
 
 

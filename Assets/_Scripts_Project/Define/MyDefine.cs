@@ -18,8 +18,8 @@ public static class MyDefine         // 定义
 
     private static readonly string[] ColorKuangStrs =
     {
-        "#FFFFFFFF","#B6F1FDFF","#38ABFDFF","#002CFFFF","#3466C9FF","#09FF00FF","#08A336FF","#F0FF62FF",
-        "#9D9F00FF","#FF8400FF","#A25AECFF","#FF00CEFF","#FF001AFF","#960763FF","#525252FF","#000000FF",
+        "#FFFFFFFF","#8D999FFF","#38ABFDFF","#002CFFFF","#254D9AFF","#09FF00FF","#08A336FF","#FCFF04FF",
+        "#9D9F00FF","#FF8400FF","#A25AECFF","#FF00CEFF","#FF001AFF","#960763FF","#624F00FF","#000000FF",
     };
 
 

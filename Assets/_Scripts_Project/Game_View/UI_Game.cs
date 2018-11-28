@@ -108,11 +108,10 @@ public class UI_Game : BaseUI
                         Ctrl_XuLieTu.Instance.DeleteOne(bigIndex, bottomIndex, Path.GetFileNameWithoutExtension(tmpPaths[0]));
                     }
                 }
-                yield return 0;
+                yield return new WaitForSeconds(0.1f);
             }
-
             L_LeftButton[bigIndex].interactable = true;
-            yield return new WaitForSeconds(0.2f);
+            yield return 0;
         }
 
         for (int i = 0; i < 11; i++)
