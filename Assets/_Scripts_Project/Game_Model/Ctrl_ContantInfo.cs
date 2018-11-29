@@ -60,18 +60,18 @@ public class Ctrl_ContantInfo : Singleton_Mono<Ctrl_ContantInfo>
                 break;
             case 1:
             case 2:
-            case 3:
-            case 4:
                 LeftItemNames[bigIndex] = "<color=blue>" + leftName + "</color>";
                 break;
-            case 5:
+            case 3:
                 LeftItemNames[bigIndex] = leftName;
                 break;
+            case 4:
+            case 5:
             case 6:
                 LeftItemNames[bigIndex] = "<color=#008080ff>" + leftName + "</color>";
                 break;
             case 7:
-                LeftItemNames[bigIndex] = "<color=white>" + leftName + "</color>";
+                LeftItemNames[bigIndex] = "<color=yellow>" + leftName + "</color>";
                 break;
         }
     }

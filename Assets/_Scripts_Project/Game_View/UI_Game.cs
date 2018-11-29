@@ -41,9 +41,6 @@ public class UI_Game : BaseUI
         {
             L_LeftText[i].text = Ctrl_ContantInfo.Instance.LeftItemNames[i];
         }
-
-
-
     }
 
 
@@ -60,11 +57,13 @@ public class UI_Game : BaseUI
 
 
 
-    private bool isLoading = false;
+//    private bool isLoading = false;
+    private ushort loadingIndex = 0;
 
     private void E_LoadTuFinishFromFile()
     {
-        isLoading = false;
+        loadingIndex--;
+//        isLoading = false;
     }
 
     IEnumerator StartFirst()
@@ -94,7 +93,7 @@ public class UI_Game : BaseUI
                 List<string[]> psthList = Ctrl_XuLieTu.Instance.GetPaths(bigIndex, bottomIndex);
                 for (int k = 0; k < psthList.Count; k++)
                 {
-                    while (isLoading)       // 有一个在加载中
+                    while (loadingIndex>1)       // 有一个在加载中
                     {
                         yield return 0;
                     }
@@ -114,8 +113,8 @@ public class UI_Game : BaseUI
                     if (isChuZai) // 存在就导入进来
                     {
                         MyEventCenter.SendEvent(E_GameEvent.DaoRu_FromFile, bigIndex, bottomIndex, fileInfos);
-                        isLoading = true;
-//                        yield return new WaitForSeconds(0.1f);  // 每个序列图读 0.1f 秒
+                        loadingIndex++;
+//                        isLoading = true;
                     }
                     else // 不存在就删除存储的
                     {

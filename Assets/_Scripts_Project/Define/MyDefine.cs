@@ -8,7 +8,7 @@ public static class MyDefine         // 定义
     public const float DoubleClickTime = 0.25f;                  // 双击的控制时间（少于这个时间就算是双击）
 
 
-    public static readonly string[] LeftName = { "施法前", "五行元素", "剑", "刀锤棍", "空手类", "命中效果", "整套技能", "加BUFF" };
+    public static readonly string[] LeftName = { "施法前", "五行元素", "武器", "命中效果", "施法 击中", "施法过程击中", "施法过程击中", "BUFF" };
 
 
 

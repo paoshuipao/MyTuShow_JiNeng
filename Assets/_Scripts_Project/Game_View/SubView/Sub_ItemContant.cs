@@ -452,12 +452,22 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         InitMoBan(bigIndex, bottomIndex, (ushort)(rt.childCount - 1), colorIndex, t, resultBeans.ToArray());
     }
 
-    private float SetSize(float value)
+    private float SetSize(ushort bigIndex,float value)
     {
         float res = value;
-        if (value > 300)
+        if (bigIndex == 5|| bigIndex == 6)
         {
-            res = 300;
+            if (value > 350)
+            {
+                res = 350;
+            }
+        }
+        else
+        {
+            if (value > 300)
+            {
+                res = 300;
+            }
         }
         if (value<4)
         {
@@ -495,7 +505,7 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
                 }
             }
         }
-        t.Find("AnimTu").GetComponent<RectTransform>().sizeDelta = new Vector2(SetSize(width),SetSize(height));
+        t.Find("AnimTu").GetComponent<RectTransform>().sizeDelta = new Vector2(SetSize(bigIndex,width),SetSize(bigIndex,height));
 
 
 
