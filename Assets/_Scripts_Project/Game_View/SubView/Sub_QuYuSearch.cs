@@ -87,7 +87,7 @@ public class Sub_QuYuSearch : SubUI
 
 
 
-        AddButtOnClick("Bottom/BtnDeleteAllClick", Btn_DeleteAll);
+//        AddButtOnClick("Bottom/BtnDeleteAllClick", Btn_DeleteAll);
     }
 
 
