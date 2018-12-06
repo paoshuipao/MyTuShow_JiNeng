@@ -10,6 +10,13 @@ public class Ctrl_DaoRuInfo : Singleton_Mono<Ctrl_DaoRuInfo>
 {
 
 
+
+    public bool IsAdmin { get; set; }                      // 是否可修改
+
+
+    //————————————————————————————————————
+
+
     public List<string> L_FavoritesPath { get; set; }              // 收藏的路径集合
 
 

@@ -203,7 +203,7 @@ public class Sub_DaoRu : SubUI
         #region 中间
 
         t_MiddleGrid = GetTransform("Bottom/ScrollView/Contant");
-        grid_Contant = t_MiddleGrid.GetComponent<UGUI_Grid>();
+        grid_Contant = t_MiddleGrid.GetComponent<UGUI_GridSize>();
         moBan_File = GetGameObject("Bottom/ScrollView/MoBan_File");
         moBan_Folder = GetGameObject("Bottom/ScrollView/MoBan_Folder");
         moBan_YinPan = GetGameObject("Bottom/ScrollView/MoBan_YinPan");
@@ -301,7 +301,7 @@ public class Sub_DaoRu : SubUI
     private readonly Dictionary<GameObject, GameObject> chooseGOK_BgV = new Dictionary<GameObject, GameObject>();    // 选中的对象作为Key，其背景作为 Value
     private readonly List<GameObject> l_MiddleItems = new List<GameObject>();   // 中间每一个 Item
     private Transform t_MiddleGrid;         // 中间 Grid  设置模版的父位置
-    private UGUI_Grid grid_Contant;         // 中间核心 Grid
+    private UGUI_GridSize grid_Contant;         // 中间核心 Grid
 
     //模版
     private GameObject moBan_File;          // 模版_文件

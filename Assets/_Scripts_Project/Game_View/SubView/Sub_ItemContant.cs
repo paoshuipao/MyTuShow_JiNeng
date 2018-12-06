@@ -250,11 +250,8 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
     {
         l_TopContant[bigIndex][bottomIndex].gameObject.SetActive(true);
         scroll.content = l_TopContant[bigIndex][bottomIndex];
-
         mCurrentBottomIndex = bottomIndex;
-
         CloseSliderSpeed();
-
     }
 
 
@@ -452,14 +449,20 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
         InitMoBan(bigIndex, bottomIndex, (ushort)(rt.childCount - 1), colorIndex, t, resultBeans.ToArray());
     }
 
-    private float SetSize(ushort bigIndex,float value)
+    private float SetSize(ushort bigIndex,ushort bottomInd,float value)
     {
         float res = value;
-        if (bigIndex == 5|| bigIndex == 6)
+        if (bigIndex == 5|| bigIndex == 6)     // 6、7 两个是施法过程击中 
         {
             if (value > 350)
             {
                 res = 350;
+            }
+        }else if (bigIndex == 7 && bottomInd == 1)    // 状态
+        { 
+            if (value > 220)
+            {
+                res = 200;
             }
         }
         else
@@ -505,9 +508,8 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
                 }
             }
         }
-        t.Find("AnimTu").GetComponent<RectTransform>().sizeDelta = new Vector2(SetSize(bigIndex,width),SetSize(bigIndex,height));
-
-
+        t.Find("AnimTu").GetComponent<ItemCallSize>().SetSize(width, height);
+//        t.Find("AnimTu").GetComponent<RectTransform>().sizeDelta = new Vector2(SetSize(bigIndex, bottomIndex, width),SetSize(bigIndex, bottomIndex, height));
 
         string kName = Path.GetFileNameWithoutExtension(resultBeans[0].File.Name);
         int lastIndex = kName.LastIndexOf('_');        // 最后的 _01 不要
@@ -533,8 +535,6 @@ public class Sub_ItemContant : SubUI            // 包含全部的内容
             }
         });
     }
-
-
 
     //————————————————————————————————————
 

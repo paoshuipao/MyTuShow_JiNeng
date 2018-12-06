@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.IO;
 using PSPUtil;
-using PSPUtil.StaticUtil;
 using UnityEngine;
 
 public class Game : MonoBehaviour
@@ -14,9 +13,6 @@ public class Game : MonoBehaviour
         Manager.Init();                      // 初始化所有的 Manager
         Application.runInBackground = true;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
-
-
-
 //        MyEventCenter.SendEvent(E_GameEvent.ShowLog);      // 显示 Log
 
     }
@@ -62,7 +58,7 @@ public class Game : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
             Ctrl_ContantInfo.Instance.InitData();
             Ctrl_XuLieTu.Instance.InitData();
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(3f);
             Manager.Get<MySceneManager>(EF_Manager.MyScene).LoadScene(EF_Scenes._1_Start);
         }
 

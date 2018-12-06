@@ -57,7 +57,6 @@ public class UI_Game : BaseUI
 
 
 
-//    private bool isLoading = false;
     private ushort loadingIndex = 0;
 
     private void E_LoadTuFinishFromFile()
@@ -93,7 +92,7 @@ public class UI_Game : BaseUI
                 List<string[]> psthList = Ctrl_XuLieTu.Instance.GetPaths(bigIndex, bottomIndex);
                 for (int k = 0; k < psthList.Count; k++)
                 {
-                    while (loadingIndex>1)       // 有一个在加载中
+                    while (loadingIndex>=MyDefine.MaxLoadCount)       // 有一个在加载中
                     {
                         yield return 0;
                     }
